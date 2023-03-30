@@ -28,7 +28,7 @@ max_sample_size <- 5000
 step_sample_size <- 30
 n_reps_sample <- 500
 sample_size <- rep(seq( min_sample_size , max_sample_size, by=step_sample_size), each= n_reps_sample)
-actual_sample_rate <- 0.005 
+hypo_sample_rate <- 0.005  # hypothetical low sample rate to compare on figures, as a reference
 
 # Get estimated proportion population a by sampling fish caught with repeated samples of various sample sizes
 estimated_prop <- sapply( sample_size, function(x) {
@@ -59,7 +59,7 @@ Simulated data:
 
 - Total catch is `r n_catch` Chinook in fishery
 - There are `r pop_a` Chinook from population **a** (low encounter rate) in the total catch. 
-- For illustration purposes, compare an 'actual' sample rate is `r actual_sample_rate` or `r actual_sample_rate * 100`\%
+- For illustration purposes, compare a hypothetical sample rate of `r hypo_sample_rate` or `r hypo_sample_rate * 100`\% with simulated data
 
 Simulated sampling is done `r n_reps_sample` each times for sampling rates between `r min_sample_size` and `r max_sample_size`. 
 
@@ -68,19 +68,20 @@ Assumptions:
 - Fish are individually identifiable to population with 100% accuracy.
 - Sampling is completely random.
 
-### Graphs
+### Figures
 
 ``` {r plot full y axis, echo=FALSE, fig.cap="Effect of sample size on estimated size of population a. Blue line is the 'true' population a size.  Red bars are mean population. Green line and shaded area are median with 5% and 95% percentiles."}
 
 ggplot() +
   #geom_violin(data = s,aes(x = sample_size, y = estimated_pop_a, group = sample_size), fill="gray", colour="gray")   +
   geom_point( data = s,aes( x = sample_size, y = estimated_pop_a), shape=1, size=2, position = position_jitter(width=3)) +
-  geom_vline(aes(xintercept = actual_sample_rate * n_catch), colour="gray", linetype=2) +
-  geom_text(aes(x=actual_sample_rate * n_catch + 5, y=5000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="gray") +
+  geom_vline(aes(xintercept = hypo_sample_rate * n_catch), colour="gray", linetype=2) +
+  geom_text(aes(x=hypo_sample_rate * n_catch + 5, y=5000, label=paste0("Sample rate = ", hypo_sample_rate*100, "%")), hjust = 0, colour="gray") +
   geom_ribbon(data = s_sum , aes(ymin=q_up, ymax=q_low, x=sample_size), alpha=0.5, fill=quantile_colour) +
     geom_line(data = s_sum , aes(y=median_pop_a, x=sample_size), linewidth=1.2, colour=median_colour) +
 geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour=mean_colour, shape=45, size=4, stroke=3) +
-  ylab("Estimated fish in population a") +
+  ylab("Estimated fish in population a") + 
+  xlab("Sample size") +
   geom_hline(aes(yintercept=0)) +
   geom_hline(aes(yintercept=pop_a), colour="dodgerblue") +
   #geom_text(aes(x=500, y=pop_a-200, label=paste0("Actual population = ", pop_a)),vjust=0, colour="dodgerblue") + 
@@ -99,11 +100,12 @@ ggplot() +
   geom_ribbon(data = s_sum , aes(ymin=q_up, ymax=q_low, x=sample_size), alpha=0.3, fill=quantile_colour) +
     geom_line(data = s_sum , aes(y=median_pop_a, x=sample_size), linewidth=1.2, colour=median_colour) +
 geom_point(data=s, aes( x = sample_size, y = estimated_pop_a), shape=1, size=2, position = position_jitter(width=3)) +
-  geom_vline(aes(xintercept = actual_sample_rate * n_catch), colour="gray", linetype=2) +
-  geom_text(aes(x=actual_sample_rate * n_catch + 5, y=2000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="gray") +
+  geom_vline(aes(xintercept = hypo_sample_rate * n_catch), colour="gray", linetype=2) +
+  geom_text(aes(x=hypo_sample_rate * n_catch + 5, y=2000, label=paste0("Sample rate = ", hypo_sample_rate*100, "%")), hjust = 0, colour="gray") +
   geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour=mean_colour, shape=45, size=6, stroke=6) +
  geom_hline(aes(yintercept=0)) +
   ylab("Estimated fish in population a") +
+  xlab("Sample size") +
   geom_hline(aes(yintercept=pop_a), colour="dodgerblue") +
   #geom_text(aes(x=200, y=pop_a-300, label=paste0("Actual population = ", pop_a)), vjust=0, colour="dodgerblue") + 
   coord_cartesian(xlim=c(0,400), ylim = c(-20,2000)) +
@@ -120,8 +122,8 @@ geom_point(data=s, aes( x = sample_size, y = estimated_pop_a), shape=1, size=2, 
 # ggplot(data = s, aes( x = sample_size, y = estimated_pop_a)) +
 #   #geom_violin(aes(group = sample_size), fill="gray", colour="gray")   +
 #   geom_point( aes( x = sample_size, y = estimated_pop_a), shape=1, size=2, position = position_jitter(width=3)) +
-#   geom_vline(aes(xintercept = actual_sample_rate * n_catch), colour="gray", linetype=2) +
-#   geom_text(aes(x=actual_sample_rate * n_catch + 5, y=50000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="gray") +  
+#   geom_vline(aes(xintercept = hypo_sample_rate * n_catch), colour="gray", linetype=2) +
+#   geom_text(aes(x=hypo_sample_rate * n_catch + 5, y=50000, label=paste0("Sample rate = ", hypo_sample_rate*100, "%")), hjust = 0, colour="gray") +  
 #   geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour="gray") +
 #   geom_point(data = s_sum , aes(y=median_pop_a, x=sample_size), colour=quantile_colour) +
 #   ylab("Estimated fish in population a") +
@@ -141,13 +143,14 @@ max_est <- max(s$estimated_pop_a)
 
 ggplot() +
    geom_point(data=s, aes( x = sample_size, y = estimated_pop_a), shape=1, size=2, position = position_jitter(width=3)) +
-  geom_vline(aes(xintercept = actual_sample_rate * n_catch), colour="gray", linetype=2) +
+  geom_vline(aes(xintercept = hypo_sample_rate * n_catch), colour="gray", linetype=2) +
   geom_ribbon(data = s_sum , aes(ymin=q_up, ymax=q_low, x=sample_size), alpha=0.3, fill=quantile_colour) +
    geom_line(data = s_sum , aes(y=median_pop_a, x=sample_size), linewidth=1.2, colour=median_colour) +
-geom_text(aes(x=actual_sample_rate * n_catch + 5, y=50000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="gray") +
+geom_text(aes(x=hypo_sample_rate * n_catch + 5, y=50000, label=paste0("Sample rate = ", hypo_sample_rate*100, "%")), hjust = 0, colour="gray") +
   geom_hline(aes(yintercept=0)) +    
   geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour=mean_colour, shape=45, size=4, stroke=3) +
   ylab("Estimated fish in population a") +
+  xlab("Sample size") +
  geom_hline(aes(yintercept=0)) +
   scale_y_log10()+
   geom_hline(aes(yintercept=pop_a), colour="dodgerblue") +
