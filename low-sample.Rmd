@@ -2,7 +2,9 @@
 title: "Effect of low sample size on genetic results"
 author: "Luke Warkentin"
 date: "2023-03-30"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,8 +14,7 @@ library(dplyr)
 options(scipen = 1000000)
 ```
 
-## Low sample size
-
+### Make some fake data
 
 ```{r make data}
 
@@ -27,7 +28,7 @@ max_sample_size <- 5000
 step_sample_size <- 20
 n_reps_sample <- 500
 sample_size <- rep(seq( min_sample_size , max_sample_size, by=step_sample_size), each= n_reps_sample)
-actual_sample_rate <- 0.003 
+actual_sample_rate <- 0.005 
 
 # Get estimated proportion population a by sampling fish caught with repeated samples of various sample sizes
 estimated_prop <- sapply( sample_size, function(x) {
@@ -48,10 +49,11 @@ Simulated data:
 
 - Total catch is `r n_catch` Chinook in fishery
 - There are `r pop_a` Chinook from population a (low encounter rate) in the total catch. 
-- Actual sample rate is `r actual_sample_rate` or `r actual_sample_rate * 100`\%
+- For illustration purposes, compare an 'actual' sample rate is `r actual_sample_rate` or `r actual_sample_rate * 100`\%
 
 Simulated sampling is done `r n_reps_sample` each times for sampling rates between `r min_sample_size` and `r max_sample_size`. 
 
+### Graphs
 
 ``` {r plot full y axis, echo=FALSE, fig.cap="Effect of sample size on estimated size of population a.  Red points are mean and purple points are median estimated population, by sample size."}
 
