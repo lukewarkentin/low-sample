@@ -18,14 +18,14 @@ options(scipen = 1000000)
 
 ```{r make data}
 
-pop_a <- 100
-pop_b <- 50000
-n_catch <- sum(pop_a, pop_b)
-fish_caught <- c(rep(1, pop_a), rep(0, pop_b))
-true_prop <- pop_a / n_catch
+pop_a <- 300 # Number of fish in population a
+pop_b <- 50000 # number of fish not in population a
+n_catch <- sum(pop_a, pop_b) # total fish caught
+fish_caught <- c(rep(1, pop_a), rep(0, pop_b)) # vector of 1 and 0, 1 if fish is population a
+true_prop <- pop_a / n_catch  # 'true' proportion of population a fish
 min_sample_size <- 10
 max_sample_size <- 5000
-step_sample_size <- 20
+step_sample_size <- 30
 n_reps_sample <- 500
 sample_size <- rep(seq( min_sample_size , max_sample_size, by=step_sample_size), each= n_reps_sample)
 actual_sample_rate <- 0.005 
@@ -48,14 +48,14 @@ s_sum <- s %>% group_by(sample_size) %>% summarise(mean_pop_a = mean(estimated_p
 Simulated data:
 
 - Total catch is `r n_catch` Chinook in fishery
-- There are `r pop_a` Chinook from population a (low encounter rate) in the total catch. 
+- There are `r pop_a` Chinook from population **a** (low encounter rate) in the total catch. 
 - For illustration purposes, compare an 'actual' sample rate is `r actual_sample_rate` or `r actual_sample_rate * 100`\%
 
 Simulated sampling is done `r n_reps_sample` each times for sampling rates between `r min_sample_size` and `r max_sample_size`. 
 
 ### Graphs
 
-``` {r plot full y axis, echo=FALSE, fig.cap="Effect of sample size on estimated size of population a.  Red points are mean and purple points are median estimated population, by sample size."}
+``` {r plot full y axis, echo=FALSE, fig.cap="Effect of sample size on estimated size of population a. Blue line is the 'true' population a size.  Red points are mean and purple points are median estimated population, by sample size."}
 
 ggplot(data = s, aes( x = sample_size, y = estimated_pop_a)) +
   geom_violin(aes(group = sample_size), fill="gray", colour="gray")   +
@@ -63,11 +63,12 @@ ggplot(data = s, aes( x = sample_size, y = estimated_pop_a)) +
   geom_vline(aes(xintercept = actual_sample_rate * n_catch), colour="red", linetype=2) +
   geom_text(aes(x=actual_sample_rate * n_catch + 5, y=5000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="red") +
   geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour="red") +
+  ylab("Estimated fish in population a") +
   geom_point(data = s_sum , aes(y=median_pop_a, x=sample_size), colour="purple") +
   geom_hline(aes(yintercept=0)) +
   geom_hline(aes(yintercept=pop_a), colour="dodgerblue") +
-  geom_text(aes(x=500, y=pop_a-200, label=paste0("Actual population = ", pop_a)),vjust=0, colour="dodgerblue") + 
-  coord_cartesian(xlim=c(0,1000)) +
+  #geom_text(aes(x=500, y=pop_a-200, label=paste0("Actual population = ", pop_a)),vjust=0, colour="dodgerblue") + 
+  coord_cartesian() +
   theme_classic()
 
 ```
@@ -75,47 +76,49 @@ ggplot(data = s, aes( x = sample_size, y = estimated_pop_a)) +
 
 
 
-``` {r plot truncated, echo=FALSE, fig.cap="Effect of sample size on estimated size of population a, y axis truncated.  Red points are mean and purple points are median estimated population, by sample size." }
+``` {r plot truncated, echo=FALSE, fig.cap="Effect of sample size on estimated size of population a, x and y axes truncated. Blue line is the 'true' population a size.   Red points are mean and purple points are median estimated population, by sample size." }
 
 ggplot(data = s, aes( x = sample_size, y = estimated_pop_a)) +
   geom_violin(aes(group = sample_size), fill="gray", colour="gray")   +
   geom_point( aes( x = sample_size, y = estimated_pop_a), shape=1, size=2, position = position_jitter(width=3)) +
   geom_vline(aes(xintercept = actual_sample_rate * n_catch), colour="red", linetype=2) +
-  geom_text(aes(x=actual_sample_rate * n_catch + 5, y=50000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="red") +
+  geom_text(aes(x=actual_sample_rate * n_catch + 5, y=2000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="red") +
   geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour="red") +
   geom_point(data = s_sum , aes(y=median_pop_a, x=sample_size), colour="purple") +  
   geom_hline(aes(yintercept=0)) +
+  ylab("Estimated fish in population a") +
   geom_hline(aes(yintercept=pop_a), colour="dodgerblue") +
-  geom_text(aes(x=200, y=pop_a-300, label=paste0("Actual population = ", pop_a)), vjust=0, colour="dodgerblue") + 
-  coord_cartesian(xlim=c(0,300), ylim = c(-20,5000)) +
+  #geom_text(aes(x=200, y=pop_a-300, label=paste0("Actual population = ", pop_a)), vjust=0, colour="dodgerblue") + 
+  coord_cartesian(xlim=c(0,400), ylim = c(-20,2000)) +
   theme_classic()
 
 ```
 
 
-``` {r plot log 10 y axis, echo=FALSE, fig.cap= "Effect of sample size on estimated size of population a, y axis is on log 10 scale. Red points are mean and purple points are median estimated population, by sample size."   }
+ ``` {r plot log 10 y axis, echo=FALSE, warning=FALSE, fig.cap= "Effect of sample size on estimated size of population a, y axis is on log 10 scale. Blue line is the 'true' population a size.  Red points are mean and purple points are median estimated population, by sample size."   }
+# 
+# max_est <- max(s$estimated_pop_a)
+# 
+# ggplot(data = s, aes( x = sample_size, y = estimated_pop_a)) +
+#   #geom_violin(aes(group = sample_size), fill="gray", colour="gray")   +
+#   geom_point( aes( x = sample_size, y = estimated_pop_a), shape=1, size=2, position = position_jitter(width=3)) +
+#   geom_vline(aes(xintercept = actual_sample_rate * n_catch), colour="red", linetype=2) +
+#   geom_text(aes(x=actual_sample_rate * n_catch + 5, y=50000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="red") +  
+#   geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour="red") +
+#   geom_point(data = s_sum , aes(y=median_pop_a, x=sample_size), colour="purple") +
+#   ylab("Estimated fish in population a") +
+#   geom_hline(aes(yintercept=0)) +
+#   scale_y_log10() +
+#   geom_hline(aes(yintercept=pop_a), colour="dodgerblue") +
+#   #geom_text(aes(x=200, y=pop_a, label=paste0("Actual population = ", pop_a)), vjust=0, colour="dodgerblue") + 
+#   coord_cartesian(xlim=c(0,1000)) +
+#   theme_classic()
+# 
+ ```
 
-max_est <- max(s$estimated_pop_a)
-
-ggplot(data = s, aes( x = sample_size, y = estimated_pop_a)) +
-  #geom_violin(aes(group = sample_size), fill="gray", colour="gray")   +
-  geom_point( aes( x = sample_size, y = estimated_pop_a), shape=1, size=2, position = position_jitter(width=3)) +
-  geom_vline(aes(xintercept = actual_sample_rate * n_catch), colour="red", linetype=2) +
-  geom_text(aes(x=actual_sample_rate * n_catch + 5, y=50000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="red") +  
-  geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour="red") +
-  geom_point(data = s_sum , aes(y=median_pop_a, x=sample_size), colour="purple") +
-  geom_hline(aes(yintercept=0)) +
-  scale_y_log10() +
-  geom_hline(aes(yintercept=pop_a), colour="dodgerblue") +
-  geom_text(aes(x=200, y=pop_a, label=paste0("Actual population = ", pop_a)), vjust=0, colour="dodgerblue") + 
-  coord_cartesian(xlim=c(0,1000)) +
-  theme_classic()
-
-```
 
 
-
-``` {r plot log 10 y axis full x, echo=FALSE, fig.cap="Effect of sample size on estimated size of population a, y axis is on log 10 scale, x axis not truncated. Red points are mean and purple points are median estimated population, by sample size."  }
+``` {r plot log 10 y axis full x, echo=FALSE, warning=FALSE, fig.cap="Effect of sample size on estimated size of population a, y axis is on log 10 scale, x axis not truncated. Blue line is the 'true' population a size. Red points are mean and purple points are median estimated population, by sample size."  }
 max_est <- max(s$estimated_pop_a)
 
 ggplot(data = s, aes( x = sample_size, y = estimated_pop_a)) +
@@ -125,10 +128,11 @@ ggplot(data = s, aes( x = sample_size, y = estimated_pop_a)) +
   geom_text(aes(x=actual_sample_rate * n_catch + 5, y=50000, label=paste0("Sample rate = ", actual_sample_rate*100, "%")), hjust = 0, colour="red") +
   geom_hline(aes(yintercept=0)) +    
   geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour="red") +
+  ylab("Estimated fish in population a") +
   geom_point(data = s_sum , aes(y=median_pop_a, x=sample_size), colour="purple") +  
   scale_y_log10()+
   geom_hline(aes(yintercept=pop_a), colour="dodgerblue") +
-  geom_text(aes(x=200, y=pop_a, label=paste0("Actual population = ", pop_a)), vjust=0, colour="dodgerblue") + 
+  #geom_text(aes(x=200, y=pop_a, label=paste0("Actual population = ", pop_a)), vjust=0, colour="dodgerblue") + 
   coord_cartesian() +
   theme_classic()
 
