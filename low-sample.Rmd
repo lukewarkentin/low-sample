@@ -57,11 +57,11 @@ mean_colour <- "red3"
 
 Simulated data:
 
-- Total catch is `r n_catch` Chinook in fishery
-- There are `r pop_a` Chinook from population **a** (low encounter rate) in the total catch. 
+- Total catch is `r n_catch` fish in fishery
+- There are `r pop_a` fish from population **a** (low encounter rate) in the total catch. 
 - For illustration purposes, compare a hypothetical sample rate of `r hypo_sample_rate` or `r hypo_sample_rate * 100`\% with simulated data
 
-Simulated sampling is done `r n_reps_sample` each times for sampling rates between `r min_sample_size` and `r max_sample_size`. 
+Simulated sampling is done `r n_reps_sample` each time for sampling rates between `r min_sample_size` and `r max_sample_size`. 
 
 Assumptions: 
 
@@ -91,6 +91,8 @@ geom_point(data = s_sum , aes(y=mean_pop_a, x=sample_size), colour=mean_colour, 
 ```
 
 \linebreak
+\linebreak
+\linebreak
 
 
 ``` {r plot truncated, echo=FALSE, fig.cap="Effect of sample size on estimated size of population a, x and y axes truncated. Blue line is the 'true' population a size. Red bars are mean population. Green line and shaded area are median with 5% and 95% percentiles." }
@@ -114,6 +116,9 @@ geom_point(data=s, aes( x = sample_size, y = estimated_pop_a), shape=1, size=2, 
 ```
 
 \linebreak
+\linebreak
+\linebreak
+
 
  ``` {r plot log 10 y axis, echo=FALSE, warning=FALSE, fig.cap= "Effect of sample size on estimated size of population a, y axis is on log 10 scale. Blue line is the 'true' population a size.  Red bars are mean and purple points are median estimated population, by sample size."   }
 # 
